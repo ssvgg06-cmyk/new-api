@@ -19,11 +19,40 @@ For commercial licensing, please contact support@quantumnous.com
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
+import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 interface MarkdownProps {
   children: string
   className?: string
+}
+
+async function copyValueToClipboard(value: string) {
+  if (!value) return
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value)
+      toast.success('已复制到剪贴板')
+      return
+    }
+  } catch {
+    /* fall through to legacy */
+  }
+  if (typeof document === 'undefined') return
+  const textarea = document.createElement('textarea')
+  textarea.value = value
+  textarea.style.position = 'fixed'
+  textarea.style.opacity = '0'
+  document.body.appendChild(textarea)
+  textarea.select()
+  try {
+    document.execCommand('copy')
+    toast.success('已复制到剪贴板')
+  } catch {
+    toast.error('复制失败,请手动选中复制')
+  } finally {
+    document.body.removeChild(textarea)
+  }
 }
 
 export function Markdown({ children, className }: MarkdownProps) {
@@ -51,10 +80,54 @@ export function Markdown({ children, className }: MarkdownProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}
         components={{
-          // 自定义组件渲染（可选）
-          a: ({ node, ...props }) => (
-            <a {...props} target='_blank' rel='noopener noreferrer' />
-          ),
+          // Same-origin / in-page links stay in place; only external links
+          // open in a new tab. javascript: hrefs (e.g. copy-to-clipboard
+          // shortcuts inside DB-injected HomePageContent) must NOT be
+          // promoted to target=_blank or the browser tries to navigate.
+          // Anchors carrying `data-copy="..."` become inline copy buttons.
+          a: ({ node: _node, href, onClick, ...rest }) => {
+            const raw = typeof href === 'string' ? href : ''
+            // react-markdown lowercases unknown attrs but rehype-raw keeps
+            // hyphenated data attributes; both ways are supported below.
+            const r = rest as Record<string, unknown>
+            const copyValue =
+              (r['data-copy'] as string | undefined) ??
+              (r['dataCopy'] as string | undefined) ??
+              ''
+            const isExternal = /^https?:\/\//i.test(raw)
+            const isJsHref = raw.toLowerCase().startsWith('javascript:')
+            const isAnchor = raw.startsWith('#')
+            const isMailto = raw.toLowerCase().startsWith('mailto:')
+            const openInNewTab =
+              isExternal && !isJsHref && !isAnchor && !isMailto && !copyValue
+            const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+              if (copyValue) {
+                event.preventDefault()
+                event.stopPropagation()
+                void copyValueToClipboard(copyValue)
+                return
+              }
+              if (isJsHref) {
+                // Block legacy `href="javascript:..."` strings entirely; we
+                // can't (and shouldn't) execute arbitrary inline JS.
+                event.preventDefault()
+                return
+              }
+              if (typeof onClick === 'function') {
+                onClick(event)
+              }
+            }
+            return (
+              <a
+                {...rest}
+                href={isJsHref ? undefined : href}
+                onClick={handleClick}
+                {...(openInNewTab
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
+              />
+            )
+          },
         }}
       >
         {children}

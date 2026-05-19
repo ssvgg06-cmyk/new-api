@@ -19,7 +19,17 @@ For commercial licensing, please contact support@quantumnous.com
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Public Sans', sans-serif;
+  /* Tinimo: Western text → system; CJK text → SC fallbacks. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto',
+    'Helvetica Neue', 'Arial', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --font-serif:
+    'Iowan Old Style', 'Apple Garamond', 'Baskerville', 'Times New Roman',
+    'Songti SC', 'Source Han Serif SC', 'Noto Serif SC', Georgia, serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', 'JetBrains Mono', 'Menlo',
+    'Consolas', monospace;
   --font-inter:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -81,19 +91,20 @@ For commercial licensing, please contact support@quantumnous.com
   --radius: 0.5rem;
   --app-header-height: 3rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.18 0.012 65); /* Tinimo 墨色 #14110e 近似 */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.012 65);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.13 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.95 0 0);
-  --secondary-foreground: oklch(0.145 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.49 0 0);
-  --accent: oklch(0.95 0 0);
-  --accent-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.18 0.012 65);
+  /* Tinimo 产品蓝 #1d4ed8 — Tailwind blue-700 */
+  --primary: oklch(0.488 0.217 264.376);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.004 65);
+  --secondary-foreground: oklch(0.18 0.012 65);
+  --muted: oklch(0.97 0.003 65);
+  --muted-foreground: oklch(0.45 0.008 65); /* 墨灰 #4a423a 近似 */
+  --accent: oklch(0.95 0.005 65);
+  --accent-foreground: oklch(0.18 0.012 65);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.596 0.145 163.225);
@@ -104,42 +115,43 @@ For commercial licensing, please contact support@quantumnous.com
   --info-foreground: oklch(0.985 0 0);
   --neutral: oklch(0.708 0 0);
   --neutral-foreground: oklch(0.145 0 0);
-  --border: oklch(0.93 0 0);
-  --input: oklch(0.93 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.92 0.003 65);
+  --input: oklch(0.92 0.003 65);
+  --ring: oklch(0.488 0.217 264.376); /* 焦点环对齐主色 */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.975 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.13 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.92 0 0);
-  --sidebar-accent-foreground: oklch(0.145 0 0);
-  --sidebar-border: oklch(0.93 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --skeleton-base: oklch(0.97 0 0);
-  --skeleton-highlight: oklch(0.985 0 0);
+  --sidebar: oklch(0.985 0.002 65);
+  --sidebar-foreground: oklch(0.18 0.012 65);
+  --sidebar-primary: oklch(0.488 0.217 264.376);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.004 65);
+  --sidebar-accent-foreground: oklch(0.18 0.012 65);
+  --sidebar-border: oklch(0.92 0.003 65);
+  --sidebar-ring: oklch(0.488 0.217 264.376);
+  --skeleton-base: oklch(0.97 0.003 65);
+  --skeleton-highlight: oklch(0.985 0.002 65);
 }
 
 .dark {
-  /* OpenAI-like dark mode: nearly black chrome, readable raised surfaces. */
-  --background: oklch(0.185 0 0);
-  --foreground: oklch(0.965 0 0);
-  --card: oklch(0.235 0 0);
-  --card-foreground: oklch(0.965 0 0);
-  --popover: oklch(0.255 0 0);
-  --popover-foreground: oklch(0.965 0 0);
-  --primary: oklch(0.965 0 0);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.285 0 0);
-  --secondary-foreground: oklch(0.965 0 0);
-  --muted: oklch(0.255 0 0);
-  --muted-foreground: oklch(0.76 0 0);
-  --accent: oklch(0.325 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Tinimo dark — ink-on-paper inverted, blue primary preserved */
+  --background: oklch(0.185 0.008 65);
+  --foreground: oklch(0.965 0.002 65);
+  --card: oklch(0.235 0.008 65);
+  --card-foreground: oklch(0.965 0.002 65);
+  --popover: oklch(0.255 0.008 65);
+  --popover-foreground: oklch(0.965 0.002 65);
+  /* In dark mode lighten primary slightly for adequate contrast on dark surfaces */
+  --primary: oklch(0.61 0.215 264.376);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.285 0.008 65);
+  --secondary-foreground: oklch(0.965 0.002 65);
+  --muted: oklch(0.255 0.008 65);
+  --muted-foreground: oklch(0.76 0.005 65);
+  --accent: oklch(0.325 0.008 65);
+  --accent-foreground: oklch(0.985 0.002 65);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.985 0 0);
   --success: oklch(0.696 0.17 162.48);
@@ -152,20 +164,20 @@ For commercial licensing, please contact support@quantumnous.com
   --neutral-foreground: oklch(0.145 0 0);
   --border: oklch(1 0 0 / 9%);
   --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.68 0 0);
+  --ring: oklch(0.61 0.215 264.376);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.115 0 0);
-  --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: oklch(0.965 0 0);
-  --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: oklch(0.31 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar: oklch(0.115 0.008 65);
+  --sidebar-foreground: oklch(0.95 0.002 65);
+  --sidebar-primary: oklch(0.61 0.215 264.376);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.31 0.008 65);
+  --sidebar-accent-foreground: oklch(0.985 0.002 65);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.68 0 0);
-  --skeleton-base: oklch(0.285 0 0);
-  --skeleton-highlight: oklch(0.39 0 0);
+  --sidebar-ring: oklch(0.61 0.215 264.376);
+  --skeleton-base: oklch(0.285 0.008 65);
+  --skeleton-highlight: oklch(0.39 0.008 65);
 }

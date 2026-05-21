@@ -78,6 +78,8 @@ interface RechargeFormCardProps {
   loading?: boolean
   priceRatio?: number
   usdExchangeRate?: number
+  /** Real $→¥ rate, used only for the rate-explainer note (effective rate may be 1 when display is USD). */
+  cnyExchangeRate?: number
   onOpenBilling?: () => void
   creemProducts?: CreemProduct[]
   enableCreemTopup?: boolean
@@ -108,6 +110,7 @@ export function RechargeFormCard({
   loading,
   priceRatio = 1,
   usdExchangeRate = 1,
+  cnyExchangeRate = 7.3,
   onOpenBilling,
   creemProducts,
   enableCreemTopup,
@@ -277,14 +280,17 @@ export function RechargeFormCard({
                               hasDiscount && 'mt-3'
                             )}
                           >
+                            <span className='text-muted-foreground mr-0.5 text-base font-medium sm:text-lg'>
+                              $
+                            </span>
                             {formatNumber(displayValue)}
                           </div>
                           <div className='text-muted-foreground mt-1 w-full text-[11px] leading-tight sm:text-xs'>
-                            {t('RechargePresetPayLabel', '应付')} {formatCurrency(actualPrice)}
+                            {t('RechargePresetPayLabel', '应付')} ¥{formatCurrency(actualPrice)}
                             {hasDiscount && savedAmount > 0 && (
                               <span className='text-green-600 dark:text-green-400'>
                                 {' '}
-                                · {t('RechargePresetSaveLabel', '省')} {formatCurrency(savedAmount)}
+                                · {t('RechargePresetSaveLabel', '省')} ¥{formatCurrency(savedAmount)}
                               </span>
                             )}
                           </div>
@@ -296,12 +302,25 @@ export function RechargeFormCard({
               )}
 
               <div className='space-y-2.5 sm:space-y-3'>
-                <Label
-                  htmlFor='topup-amount'
-                  className='text-muted-foreground text-xs font-medium tracking-wider uppercase'
-                >
-                  {t('Custom Amount')}
-                </Label>
+                <div className='flex items-baseline justify-between gap-3'>
+                  <Label
+                    htmlFor='topup-amount'
+                    className='text-muted-foreground text-xs font-medium tracking-wider uppercase'
+                  >
+                    {t('Custom Amount')}
+                    <span className='text-muted-foreground/70 ms-1.5 font-mono text-[10px] normal-case tracking-normal'>
+                      ($)
+                    </span>
+                  </Label>
+                  <span className='text-muted-foreground text-[11px]'>
+                    1 <span className='font-mono'>$</span>
+                    <span className='opacity-60'> ≈ </span>
+                    {cnyExchangeRate.toFixed(2)}{' '}
+                    <span className='font-mono'>¥</span>
+                    <span className='mx-1.5 opacity-40'>·</span>
+                    {t('SurchargeIncluded', '已含 1.6% 通道手续费')}
+                  </span>
+                </div>
                 <div className='grid grid-cols-[minmax(0,1fr)_minmax(110px,0.55fr)] gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'>
                   <Input
                     id='topup-amount'
@@ -319,8 +338,8 @@ export function RechargeFormCard({
                     {calculating ? (
                       <Skeleton className='h-5 w-16' />
                     ) : (
-                      <span className='text-sm font-semibold'>
-                        {formatCurrency(paymentAmount)}
+                      <span className='text-sm font-semibold tabular-nums'>
+                        ¥{formatCurrency(paymentAmount)}
                       </span>
                     )}
                   </div>
@@ -340,7 +359,7 @@ export function RechargeFormCard({
                     <span>
                       {t(
                         'AlipaySurchargeNote',
-                        '走支付宝充值会在原价基础上额外收取 1.6% 的通道手续费。'
+                        '支付宝充值的应付金额已包含 1.6% 通道手续费。'
                       )}
                     </span>
                   </div>
@@ -352,7 +371,7 @@ export function RechargeFormCard({
                     <span>
                       {t(
                         'WeChatSupportPrefix',
-                        '不想付手续费？添加微信客服'
+                        '想免手续费？添加微信客服'
                       )}{' '}
                       <span className='text-foreground font-mono font-medium'>
                         TagPup

@@ -98,12 +98,12 @@ export function PaymentConfirmDialog({
               <Skeleton className='h-6 w-24' />
             ) : (
               <div className='flex items-baseline gap-2'>
-                <span className='text-2xl font-semibold'>
-                  {formatCurrency(paymentAmount)}
+                <span className='text-2xl font-semibold tabular-nums'>
+                  ¥{formatCurrency(paymentAmount)}
                 </span>
                 {hasDiscount && (
-                  <span className='text-muted-foreground text-sm line-through'>
-                    {formatCurrency(originalAmount)}
+                  <span className='text-muted-foreground text-sm line-through tabular-nums'>
+                    ¥{formatCurrency(originalAmount)}
                   </span>
                 )}
               </div>
@@ -114,8 +114,8 @@ export function PaymentConfirmDialog({
             <div className='bg-muted/50 rounded-lg p-3'>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
-                <span className='font-semibold text-green-600'>
-                  {formatCurrency(discountAmount)}
+                <span className='font-semibold text-green-600 tabular-nums'>
+                  ¥{formatCurrency(discountAmount)}
                 </span>
               </div>
             </div>

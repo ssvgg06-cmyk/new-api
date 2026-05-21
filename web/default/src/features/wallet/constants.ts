@@ -69,3 +69,9 @@ export const DEFAULT_DISCOUNT_RATE = 1.0
  * Default minimum topup amount
  */
 export const DEFAULT_MIN_TOPUP = 1
+
+/**
+ * tinimo: ZPay (易支付) gateway surcharge passed through to the user.
+ * Keep in sync with backend `epayUserSurcharge` in controller/topup.go.
+ */
+export const PAYMENT_SURCHARGE_RATE = 0.016

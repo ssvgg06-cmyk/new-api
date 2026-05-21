@@ -21,6 +21,11 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// tinimo: pass-through surcharge billed by ZPay (易支付) on each transaction.
+// 1.6% covers Alipay/WeChat gateway fees so the platform doesn't eat them.
+// Keep this in sync with frontend constants (recharge-form-card surcharge note).
+const epayUserSurcharge = 0.016
+
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
 
@@ -171,6 +176,10 @@ func getPayMoney(amount int64, group string) float64 {
 	dDiscount := decimal.NewFromFloat(discount)
 
 	payMoney := dAmount.Mul(dPrice).Mul(dTopupGroupRatio).Mul(dDiscount)
+	// tinimo: ZPay (易支付) charges merchant a flat percentage on each
+	// transaction. Pass that surcharge through to the user so the platform
+	// runs at break-even on payment fees.
+	payMoney = payMoney.Mul(decimal.NewFromFloat(1 + epayUserSurcharge))
 
 	return payMoney.InexactFloat64()
 }

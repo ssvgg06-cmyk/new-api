@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { DEFAULT_DISCOUNT_RATE } from '../constants'
+import { DEFAULT_DISCOUNT_RATE, PAYMENT_SURCHARGE_RATE } from '../constants'
 
 // ============================================================================
 // Wallet-specific Formatting Functions
@@ -73,7 +73,16 @@ export function getDiscountLabel(discount: number): string {
 }
 
 /**
- * Calculate pricing details for a preset amount
+ * Calculate pricing details for a preset amount.
+ *
+ * Pricing flow:
+ *   1. presetValue (USD top-up units) × priceRatio = CNY base amount
+ *   2. × discount (volume discount, ≤1.0)
+ *   3. × (1 + PAYMENT_SURCHARGE_RATE) for ZPay (易支付) gateway pass-through
+ *
+ * The surcharge must stay in sync with backend `epayUserSurcharge` in
+ * controller/topup.go so the displayed "应付" matches what we actually
+ * charge through the gateway.
  */
 export function calculatePresetPricing(
   presetValue: number,
@@ -82,8 +91,10 @@ export function calculatePresetPricing(
   usdExchangeRate: number = 1
 ) {
   const originalPrice = presetValue * priceRatio
-  const actualPrice = originalPrice * discount
-  const savedAmount = originalPrice - actualPrice
+  const discountedPrice = originalPrice * discount
+  const actualPrice = discountedPrice * (1 + PAYMENT_SURCHARGE_RATE)
+  const savedAmount = originalPrice - discountedPrice
+  const surcharge = actualPrice - discountedPrice
   const hasDiscount = discount < 1.0
   const displayValue = presetValue * usdExchangeRate
 
@@ -92,6 +103,7 @@ export function calculatePresetPricing(
     originalPrice,
     actualPrice,
     savedAmount,
+    surcharge,
     hasDiscount,
   }
 }

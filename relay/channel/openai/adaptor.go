@@ -310,6 +310,7 @@ func (a *Adaptor) ConvertOpenAIRequest(c *gin.Context, info *relaycommon.RelayIn
 		}
 
 	}
+	applyClaudeOpenAISamplingCompatibility(info.UpstreamModelName, request)
 	if strings.HasPrefix(info.UpstreamModelName, "o") || strings.HasPrefix(info.UpstreamModelName, "gpt-5") {
 		if lo.FromPtrOr(request.MaxCompletionTokens, uint(0)) == 0 && lo.FromPtrOr(request.MaxTokens, uint(0)) != 0 {
 			request.MaxCompletionTokens = request.MaxTokens
@@ -347,6 +348,24 @@ func (a *Adaptor) ConvertOpenAIRequest(c *gin.Context, info *relaycommon.RelayIn
 	}
 
 	return request, nil
+}
+
+func applyClaudeOpenAISamplingCompatibility(modelName string, request *dto.GeneralOpenAIRequest) {
+	if request == nil {
+		return
+	}
+	if modelName == "" {
+		modelName = request.Model
+	}
+	if strings.HasPrefix(modelName, "claude-opus-4-7") {
+		request.Temperature = nil
+		request.TopP = nil
+		request.TopK = nil
+		return
+	}
+	if strings.HasPrefix(modelName, "claude-") && request.Temperature != nil && request.TopP != nil {
+		request.TopP = nil
+	}
 }
 
 func (a *Adaptor) ConvertRerankRequest(c *gin.Context, relayMode int, request dto.RerankRequest) (any, error) {

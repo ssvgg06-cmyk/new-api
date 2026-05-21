@@ -71,7 +71,7 @@ export function SupportPopover({
                 'text-muted-foreground hover:bg-accent hover:text-foreground inline-flex size-8 items-center justify-center rounded-md transition-colors',
                 className
               )}
-              aria-label={t('Customer Support')}
+              aria-label={t('Customer Support', '客服')}
             >
               <MessageCircle className='size-4' />
             </button>
@@ -85,7 +85,7 @@ export function SupportPopover({
               )}
             >
               <MessageCircle className='size-3.5' aria-hidden='true' />
-              <span>{t('Customer Support')}</span>
+              <span>{t('Customer Support', '客服')}</span>
             </button>
           )
         }
@@ -98,11 +98,11 @@ export function SupportPopover({
       >
         <div className='flex flex-col items-center gap-2'>
           <div className='text-foreground/90 text-xs font-medium tracking-wide'>
-            {t('Scan or add WeChat')}
+            {t('Scan or add WeChat', '扫码或添加微信')}
           </div>
           <img
             src={QR_SRC}
-            alt={t('Customer Support WeChat QR')}
+            alt={t('Customer Support WeChat QR', '客服微信二维码')}
             className='h-44 w-44 rounded-md border bg-white object-contain p-1'
             draggable={false}
           />
@@ -110,12 +110,12 @@ export function SupportPopover({
             type='button'
             onClick={handleCopyId}
             className='bg-muted/40 hover:bg-muted/70 mt-1 inline-flex h-7 items-center gap-1 rounded-md px-2 font-mono text-xs transition-colors'
-            title={t('Copy WeChat ID')}
+            title={t('Copy WeChat ID', '复制微信号')}
           >
-            <span className='text-muted-foreground'>WeChat:</span>
+            <span className='text-muted-foreground'>{t('WeChatLabel', '微信号')}:</span>
             <span className='text-foreground'>{WECHAT_ID}</span>
             <span className='text-muted-foreground ml-1 text-[10px]'>
-              {copied ? t('Copied') : t('Copy')}
+              {copied ? t('Copied', '已复制') : t('Copy', '复制')}
             </span>
           </button>
         </div>

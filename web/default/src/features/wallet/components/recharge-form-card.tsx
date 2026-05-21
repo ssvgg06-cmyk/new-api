@@ -224,10 +224,10 @@ export function RechargeFormCard({
                 <div className='space-y-2.5 sm:space-y-3'>
                   <div className='flex items-baseline justify-between gap-3'>
                     <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
-                      {t('Quick Pick')}
+                      {t('Quick Pick', '快捷选择')}
                     </Label>
                     <span className='text-muted-foreground text-[11px]'>
-                      {t('Tap a card to set the amount')}
+                      {t('Tap a card to set the amount', '点击卡片自动填入金额')}
                     </span>
                   </div>
                   <div className='grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4'>
@@ -280,11 +280,11 @@ export function RechargeFormCard({
                             {formatNumber(displayValue)}
                           </div>
                           <div className='text-muted-foreground mt-1 w-full text-[11px] leading-tight sm:text-xs'>
-                            {t('Pay')} {formatCurrency(actualPrice)}
+                            {t('RechargePresetPayLabel', '应付')} {formatCurrency(actualPrice)}
                             {hasDiscount && savedAmount > 0 && (
                               <span className='text-green-600 dark:text-green-400'>
                                 {' '}
-                                · {t('Save')} {formatCurrency(savedAmount)}
+                                · {t('RechargePresetSaveLabel', '省')} {formatCurrency(savedAmount)}
                               </span>
                             )}
                           </div>
@@ -339,7 +339,8 @@ export function RechargeFormCard({
                     />
                     <span>
                       {t(
-                        'Alipay carries a 1.6% gateway surcharge applied on top of the listed price.'
+                        'AlipaySurchargeNote',
+                        '走支付宝充值会在原价基础上额外收取 1.6% 的通道手续费。'
                       )}
                     </span>
                   </div>
@@ -350,12 +351,13 @@ export function RechargeFormCard({
                     />
                     <span>
                       {t(
-                        'Prefer no surcharge? Add WeChat customer support'
+                        'WeChatSupportPrefix',
+                        '不想付手续费？添加微信客服'
                       )}{' '}
                       <span className='text-foreground font-mono font-medium'>
                         TagPup
                       </span>{' '}
-                      {t('to top up directly.')}
+                      {t('WeChatSupportSuffix', '可直接充值。')}
                     </span>
                   </div>
                 </div>

@@ -35,6 +35,7 @@ export const MESSAGE_STATUS = {
 // API endpoints
 export const API_ENDPOINTS = {
   CHAT_COMPLETIONS: '/pg/chat/completions',
+  IMAGE_GENERATIONS: '/pg/images/generations',
   USER_MODELS: '/api/user/models',
   USER_GROUPS: '/api/user/self/groups',
 } as const
@@ -81,6 +82,11 @@ export const ERROR_MESSAGES = {
   CONNECTION_CLOSED: 'Connection closed',
   INTERRUPTED: 'Generation was interrupted',
 } as const
+
+export function isPlaygroundImageModel(model: string): boolean {
+  const normalized = model.toLowerCase()
+  return normalized.startsWith('gpt-image-') || normalized.startsWith('dall-e')
+}
 
 // Message action button styles
 export const MESSAGE_ACTION_BUTTON_STYLES = {

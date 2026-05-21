@@ -112,7 +112,27 @@ export function loadMessages(): Message[] | null {
  */
 export function saveMessages(messages: Message[]): void {
   try {
-    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages))
+    const persistableMessages = messages.map((message) => {
+      const persistableImages = message.generatedImages?.filter(
+        (image) => !!image.url
+      )
+
+      if (persistableImages?.length === message.generatedImages?.length) {
+        return message
+      }
+
+      return {
+        ...message,
+        generatedImages: persistableImages?.length
+          ? persistableImages
+          : undefined,
+      }
+    })
+
+    localStorage.setItem(
+      STORAGE_KEYS.MESSAGES,
+      JSON.stringify(persistableMessages)
+    )
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Failed to save messages:', error)

@@ -16,10 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
-import { sendChatCompletion } from '../api'
-import { MESSAGE_STATUS, ERROR_MESSAGES } from '../constants'
+import { sendChatCompletion, sendImageGeneration } from '../api'
+import {
+  MESSAGE_STATUS,
+  ERROR_MESSAGES,
+  isPlaygroundImageModel,
+} from '../constants'
 import {
   buildChatCompletionPayload,
   updateAssistantMessageWithError,
@@ -45,6 +49,7 @@ export function useChatHandler({
   onMessageUpdate,
 }: UseChatHandlerOptions) {
   const { sendStreamRequest, stopStream, isStreaming } = useStreamRequest()
+  const [isImageGenerating, setIsImageGenerating] = useState(false)
 
   // Handle stream update
   const handleStreamUpdate = useCallback(
@@ -174,16 +179,81 @@ export function useChatHandler({
     [config, parameterEnabled, onMessageUpdate, handleStreamError]
   )
 
+  const sendImage = useCallback(
+    async (messages: Message[]) => {
+      const prompt = [...messages]
+        .reverse()
+        .find((message) => message.from === 'user')
+        ?.versions[0]?.content.trim()
+
+      if (!prompt) {
+        handleStreamError(ERROR_MESSAGES.API_REQUEST_ERROR)
+        return
+      }
+
+      setIsImageGenerating(true)
+      try {
+        const response = await sendImageGeneration({
+          model: config.model,
+          group: config.group,
+          prompt,
+          n: 1,
+        })
+        const images = response.data || []
+        if (!images.length) {
+          handleStreamError(ERROR_MESSAGES.API_REQUEST_ERROR)
+          return
+        }
+
+        onMessageUpdate((prev) =>
+          updateLastAssistantMessage(prev, (message) => ({
+            ...finalizeMessage(message),
+            generatedImages: images,
+            status: MESSAGE_STATUS.COMPLETE,
+          }))
+        )
+      } catch (error: unknown) {
+        const err = error as {
+          response?: {
+            data?: {
+              message?: string
+              error?: { message?: string; code?: string }
+            }
+          }
+          message?: string
+        }
+        handleStreamError(
+          err?.response?.data?.error?.message ||
+            err?.response?.data?.message ||
+            err?.message ||
+            ERROR_MESSAGES.API_REQUEST_ERROR,
+          err?.response?.data?.error?.code || undefined
+        )
+      } finally {
+        setIsImageGenerating(false)
+      }
+    },
+    [config.group, config.model, handleStreamError, onMessageUpdate]
+  )
+
   // Send chat request (stream or non-stream based on config)
   const sendChat = useCallback(
     (messages: Message[]) => {
-      if (config.stream) {
+      if (isPlaygroundImageModel(config.model)) {
+        sendImage(messages)
+      } else if (config.stream) {
         sendStreamingChat(messages)
       } else {
         sendNonStreamingChat(messages)
       }
     },
-    [config.stream, sendStreamingChat, sendNonStreamingChat]
+    [
+      config.model,
+      config.stream,
+      sendImage,
+      sendStreamingChat,
+      sendNonStreamingChat,
+    ]
   )
 
   // Stop generation
@@ -202,6 +272,6 @@ export function useChatHandler({
   return {
     sendChat,
     stopGeneration,
-    isGenerating: isStreaming,
+    isGenerating: isStreaming || isImageGenerating,
   }
 }

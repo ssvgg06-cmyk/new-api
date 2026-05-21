@@ -173,7 +173,8 @@ export function PlaygroundChat({
                               const showMessageContent =
                                 (message.from === MESSAGE_ROLES.USER ||
                                   !message.isReasoningStreaming) &&
-                                !!version.content
+                                (!!version.content ||
+                                  !!message.generatedImages?.length)
 
                               // Extract visible content (remove <think> tags for assistant messages)
                               const displayContent = isAssistant
@@ -256,7 +257,37 @@ export function PlaygroundChat({
                                             getMessageContentStyles()
                                           )}
                                         >
-                                          <Response>{displayContent}</Response>
+                                          {displayContent && (
+                                            <Response>
+                                              {displayContent}
+                                            </Response>
+                                          )}
+                                          {!!message.generatedImages
+                                            ?.length && (
+                                            <div className='grid gap-3 sm:grid-cols-2'>
+                                              {message.generatedImages.map(
+                                                (image, imageIndex) => {
+                                                  const src =
+                                                    image.url ||
+                                                    (image.b64_json
+                                                      ? `data:image/png;base64,${image.b64_json}`
+                                                      : '')
+                                                  if (!src) return null
+                                                  return (
+                                                    <img
+                                                      alt={
+                                                        image.revised_prompt ||
+                                                        'Generated image'
+                                                      }
+                                                      className='h-auto w-full rounded-md border object-contain'
+                                                      key={`${message.key}-generated-image-${imageIndex}`}
+                                                      src={src}
+                                                    />
+                                                  )
+                                                }
+                                              )}
+                                            </div>
+                                          )}
                                         </MessageContent>
                                         {actions}
                                       </>

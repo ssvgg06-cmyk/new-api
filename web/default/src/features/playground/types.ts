@@ -40,6 +40,7 @@ export interface Message {
   isContentComplete?: boolean
   status?: MessageStatus
   errorCode?: string | null
+  generatedImages?: ImageData[]
 }
 
 // API payload types
@@ -104,6 +105,24 @@ export interface ChatCompletionResponse {
     completion_tokens: number
     total_tokens: number
   }
+}
+
+export interface ImageGenerationRequest {
+  model: string
+  group?: string
+  prompt: string
+  n?: number
+}
+
+export interface ImageGenerationResponse {
+  created?: number
+  data?: ImageData[]
+}
+
+export interface ImageData {
+  url?: string
+  b64_json?: string
+  revised_prompt?: string
 }
 
 // Configuration types

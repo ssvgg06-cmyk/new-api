@@ -331,6 +331,27 @@ func TestRequestOpenAI2ClaudeMessage_PrefersTemperatureOverTopP(t *testing.T) {
 	require.Nil(t, claudeRequest.TopP)
 }
 
+func TestRequestOpenAI2ClaudeMessage_RemovesOpus47SamplingParameters(t *testing.T) {
+	request := dto.GeneralOpenAIRequest{
+		Model:       "claude-opus-4-7",
+		Temperature: common.GetPointer[float64](0.7),
+		TopP:        common.GetPointer[float64](1),
+		TopK:        common.GetPointer[int](4),
+		Messages: []dto.Message{
+			{
+				Role:    "user",
+				Content: "hello",
+			},
+		},
+	}
+
+	claudeRequest, err := RequestOpenAI2ClaudeMessage(nil, request)
+	require.NoError(t, err)
+	require.Nil(t, claudeRequest.Temperature)
+	require.Nil(t, claudeRequest.TopP)
+	require.Nil(t, claudeRequest.TopK)
+}
+
 func TestRequestOpenAI2ClaudeMessage_SupportsPDFFileContent(t *testing.T) {
 	request := dto.GeneralOpenAIRequest{
 		Model: "claude-3-5-sonnet",

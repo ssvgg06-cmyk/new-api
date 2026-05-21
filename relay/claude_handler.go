@@ -103,7 +103,11 @@ func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *typ
 		info.UpstreamModelName = request.Model
 	}
 
-	if request.Temperature != nil && request.TopP != nil {
+	if strings.HasPrefix(request.Model, "claude-opus-4-7") {
+		request.Temperature = nil
+		request.TopP = nil
+		request.TopK = nil
+	} else if request.Temperature != nil && request.TopP != nil {
 		request.TopP = nil
 	}
 

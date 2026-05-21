@@ -203,7 +203,11 @@ func RequestOpenAI2ClaudeMessage(c *gin.Context, textRequest dto.GeneralOpenAIRe
 		}
 	}
 
-	if claudeRequest.Temperature != nil && claudeRequest.TopP != nil {
+	if strings.HasPrefix(claudeRequest.Model, "claude-opus-4-7") {
+		claudeRequest.Temperature = nil
+		claudeRequest.TopP = nil
+		claudeRequest.TopK = nil
+	} else if claudeRequest.Temperature != nil && claudeRequest.TopP != nil {
 		claudeRequest.TopP = nil
 	}
 

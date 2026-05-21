@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/dto"
 	"github.com/stretchr/testify/require"
 )
@@ -308,6 +309,26 @@ func TestRequestOpenAI2ClaudeMessage_IgnoresUnsupportedFileContent(t *testing.T)
 	require.Equal(t, "text", content[0].Type)
 	require.NotNil(t, content[0].Text)
 	require.Equal(t, "see attachment", *content[0].Text)
+}
+
+func TestRequestOpenAI2ClaudeMessage_PrefersTemperatureOverTopP(t *testing.T) {
+	request := dto.GeneralOpenAIRequest{
+		Model:       "claude-3-5-sonnet",
+		Temperature: common.GetPointer[float64](0.4),
+		TopP:        common.GetPointer[float64](0.8),
+		Messages: []dto.Message{
+			{
+				Role:    "user",
+				Content: "hello",
+			},
+		},
+	}
+
+	claudeRequest, err := RequestOpenAI2ClaudeMessage(nil, request)
+	require.NoError(t, err)
+	require.NotNil(t, claudeRequest.Temperature)
+	require.Equal(t, 0.4, *claudeRequest.Temperature)
+	require.Nil(t, claudeRequest.TopP)
 }
 
 func TestRequestOpenAI2ClaudeMessage_SupportsPDFFileContent(t *testing.T) {

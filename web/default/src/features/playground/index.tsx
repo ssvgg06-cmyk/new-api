@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getUserModels, getUserGroups } from './api'
 import { PlaygroundChat } from './components/playground-chat'
@@ -61,18 +61,20 @@ export function Playground() {
     queryFn: getUserGroups,
   })
 
+  const filteredModels = useMemo(() => {
+    const groupModels = groups.find((g) => g.value === config.group)?.models
+    if (!groupModels) return models
+
+    const availableGroupModels = new Set(groupModels)
+    return models.filter((model) => availableGroupModels.has(model.value))
+  }, [config.group, groups, models])
+
   // Update models when data changes
   useEffect(() => {
     if (!modelsData) return
 
     setModels(modelsData)
-
-    // Set default model if current model is not available
-    const isCurrentModelValid = modelsData.some((m) => m.value === config.model)
-    if (modelsData.length > 0 && !isCurrentModelValid) {
-      updateConfig('model', modelsData[0].value)
-    }
-  }, [modelsData, config.model, setModels, updateConfig])
+  }, [modelsData, setModels])
 
   // Update groups when data changes
   useEffect(() => {
@@ -88,6 +90,16 @@ export function Playground() {
       updateConfig('group', fallback)
     }
   }, [groupsData, setGroups, config.group, updateConfig])
+
+  // Select a model the active group can route after models or groups change.
+  useEffect(() => {
+    const isCurrentModelValid = filteredModels.some(
+      (model) => model.value === config.model
+    )
+    if (filteredModels.length > 0 && !isCurrentModelValid) {
+      updateConfig('model', filteredModels[0].value)
+    }
+  }, [config.model, filteredModels, updateConfig])
 
   const handleSendMessage = (text: string) => {
     const userMessage = createUserMessage(text)
@@ -190,7 +202,7 @@ export function Playground() {
           isGenerating={isGenerating}
           isModelLoading={isLoadingModels}
           modelValue={config.model}
-          models={models}
+          models={filteredModels}
           onGroupChange={(value) => updateConfig('group', value)}
           onModelChange={(value) => updateConfig('model', value)}
           onStop={stopGeneration}

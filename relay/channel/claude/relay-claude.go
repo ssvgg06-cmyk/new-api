@@ -203,6 +203,10 @@ func RequestOpenAI2ClaudeMessage(c *gin.Context, textRequest dto.GeneralOpenAIRe
 		}
 	}
 
+	if claudeRequest.Temperature != nil && claudeRequest.TopP != nil {
+		claudeRequest.TopP = nil
+	}
+
 	if textRequest.ReasoningEffort != "" {
 		switch textRequest.ReasoningEffort {
 		case "low":

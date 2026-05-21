@@ -50,6 +50,7 @@ import {
   getMinTopupAmount,
   calculatePresetPricing,
 } from '../lib'
+import { PAYMENT_SURCHARGE_RATE } from '../constants'
 import type {
   PaymentMethod,
   PresetAmount,
@@ -78,8 +79,6 @@ interface RechargeFormCardProps {
   loading?: boolean
   priceRatio?: number
   usdExchangeRate?: number
-  /** Real $→¥ rate, used only for the rate-explainer note (effective rate may be 1 when display is USD). */
-  cnyExchangeRate?: number
   onOpenBilling?: () => void
   creemProducts?: CreemProduct[]
   enableCreemTopup?: boolean
@@ -110,7 +109,6 @@ export function RechargeFormCard({
   loading,
   priceRatio = 1,
   usdExchangeRate = 1,
-  cnyExchangeRate = 7.3,
   onOpenBilling,
   creemProducts,
   enableCreemTopup,
@@ -315,7 +313,7 @@ export function RechargeFormCard({
                   <span className='text-muted-foreground text-[11px]'>
                     1 <span className='font-mono'>$</span>
                     <span className='opacity-60'> ≈ </span>
-                    {cnyExchangeRate.toFixed(2)}{' '}
+                    {(priceRatio * (1 + PAYMENT_SURCHARGE_RATE)).toFixed(3)}{' '}
                     <span className='font-mono'>¥</span>
                     <span className='mx-1.5 opacity-40'>·</span>
                     {t('SurchargeIncluded', '已含 1.6% 通道手续费')}

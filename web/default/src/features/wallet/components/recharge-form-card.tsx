@@ -17,7 +17,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { useState, useEffect } from 'react'
-import { Gift, ExternalLink, Loader2, Receipt, WalletCards } from 'lucide-react'
+import {
+  Gift,
+  ExternalLink,
+  Loader2,
+  Receipt,
+  WalletCards,
+  Check,
+  Info,
+  MessageCircle,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -213,10 +222,15 @@ export function RechargeFormCard({
             <>
               {presetAmounts.length > 0 && (
                 <div className='space-y-2.5 sm:space-y-3'>
-                  <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
-                    {t('Amount')}
-                  </Label>
-                  <div className='grid grid-cols-2 gap-1.5 sm:gap-3 md:grid-cols-4'>
+                  <div className='flex items-baseline justify-between gap-3'>
+                    <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
+                      {t('Quick Pick')}
+                    </Label>
+                    <span className='text-muted-foreground text-[11px]'>
+                      {t('Tap a card to set the amount')}
+                    </span>
+                  </div>
+                  <div className='grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4'>
                     {presetAmounts.map((preset, index) => {
                       const discount =
                         preset.discount ||
@@ -233,38 +247,48 @@ export function RechargeFormCard({
                         discount,
                         usdExchangeRate
                       )
+                      const isActive = selectedPreset === preset.value
                       return (
-                        <Button
+                        <button
+                          type='button'
                           key={index}
-                          variant='outline'
-                          className={cn(
-                            'hover:border-foreground flex min-h-16 flex-col items-start rounded-lg px-3 py-2.5 text-left whitespace-normal sm:min-h-[72px] sm:p-4',
-                            selectedPreset === preset.value
-                              ? 'border-foreground bg-foreground/5'
-                              : 'border-muted'
-                          )}
                           onClick={() => onSelectPreset(preset)}
+                          className={cn(
+                            'group bg-card text-card-foreground hover:border-foreground/60 hover:shadow-sm focus-visible:outline-ring/60 relative flex min-h-20 flex-col items-start justify-between rounded-xl border p-3 text-left transition-[colors,box-shadow,transform] focus-visible:outline-2 focus-visible:outline-offset-2 active:scale-[0.99] sm:min-h-[88px] sm:p-4',
+                            isActive
+                              ? 'border-foreground bg-foreground/5 shadow-sm ring-foreground/10 ring-1'
+                              : 'border-border'
+                          )}
+                          aria-pressed={isActive}
                         >
-                          <div className='flex w-full items-center justify-between'>
-                            <div className='text-base font-semibold sm:text-lg'>
-                              {formatNumber(displayValue)}
-                            </div>
-                            {hasDiscount && (
-                              <div className='text-xs font-medium text-green-600'>
-                                {getDiscountLabel(discount)}
-                              </div>
+                          {isActive && (
+                            <span className='bg-foreground text-background absolute top-2 right-2 inline-flex size-4 items-center justify-center rounded-full'>
+                              <Check className='size-2.5' strokeWidth={3} />
+                            </span>
+                          )}
+                          {hasDiscount && (
+                            <span className='absolute top-2 left-2 inline-flex items-center rounded-full bg-green-600/10 px-1.5 py-0.5 text-[10px] font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-400'>
+                              {getDiscountLabel(discount)}
+                            </span>
+                          )}
+                          <div
+                            className={cn(
+                              'mt-auto text-xl font-semibold tracking-tight tabular-nums sm:text-2xl',
+                              hasDiscount && 'mt-3'
                             )}
+                          >
+                            {formatNumber(displayValue)}
                           </div>
-                          <div className='text-muted-foreground mt-1.5 w-full text-xs sm:mt-2'>
-                            Pay {formatCurrency(actualPrice)}
+                          <div className='text-muted-foreground mt-1 w-full text-[11px] leading-tight sm:text-xs'>
+                            {t('Pay')} {formatCurrency(actualPrice)}
                             {hasDiscount && savedAmount > 0 && (
-                              <span className='text-green-600'>
+                              <span className='text-green-600 dark:text-green-400'>
                                 {' '}
-                                • Save {formatCurrency(savedAmount)}
+                                · {t('Save')} {formatCurrency(savedAmount)}
                               </span>
                             )}
                           </div>
-                        </Button>
+                        </button>
                       )
                     })}
                   </div>
@@ -307,6 +331,34 @@ export function RechargeFormCard({
                 <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
                   {t('Payment Method')}
                 </Label>
+                <div className='space-y-1.5'>
+                  <div className='text-muted-foreground flex items-start gap-1.5 text-[11px] leading-snug sm:text-xs'>
+                    <Info
+                      className='mt-0.5 size-3 shrink-0'
+                      aria-hidden='true'
+                    />
+                    <span>
+                      {t(
+                        'Alipay carries a 1.6% gateway surcharge applied on top of the listed price.'
+                      )}
+                    </span>
+                  </div>
+                  <div className='text-muted-foreground flex items-start gap-1.5 text-[11px] leading-snug sm:text-xs'>
+                    <MessageCircle
+                      className='mt-0.5 size-3 shrink-0'
+                      aria-hidden='true'
+                    />
+                    <span>
+                      {t(
+                        'Prefer no surcharge? Add WeChat customer support'
+                      )}{' '}
+                      <span className='text-foreground font-mono font-medium'>
+                        TagPup
+                      </span>{' '}
+                      {t('to top up directly.')}
+                    </span>
+                  </div>
+                </div>
                 {hasStandardPaymentMethods ? (
                   <div className='grid grid-cols-2 gap-1.5 sm:gap-3 lg:grid-cols-3'>
                     {topupInfo?.pay_methods?.map((method) => {

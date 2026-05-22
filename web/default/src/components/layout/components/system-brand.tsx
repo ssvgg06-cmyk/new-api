@@ -68,7 +68,7 @@ export function SystemBrand(props: SystemBrandProps) {
           <img
             src={logo}
             alt={t('Logo')}
-            className='size-full rounded-md object-cover'
+            className='size-full rounded-md object-cover dark:invert dark:hue-rotate-180'
           />
         </div>
         <span className='max-w-[12rem] truncate'>{name}</span>
@@ -88,7 +88,7 @@ export function SystemBrand(props: SystemBrandProps) {
             <img
               src={logo}
               alt={t('Logo')}
-              className='size-full rounded-lg object-cover'
+              className='size-full rounded-lg object-cover dark:invert dark:hue-rotate-180'
             />
           </div>
           <div className='grid flex-1 text-start text-sm leading-tight group-data-[collapsible=icon]:hidden'>

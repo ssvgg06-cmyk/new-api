@@ -17,10 +17,10 @@ import { MessageCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card'
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 const WECHAT_ID = 'TagPup'
 const QR_SRC = '/wechat-qr.jpg'
@@ -35,8 +35,9 @@ interface SupportPopoverProps {
 }
 
 /**
- * 客服 / Customer Support entry — hover/click to reveal WeChat contact and QR.
- * Used in PublicHeader (text variant) and AppHeader (icon variant).
+ * 客服 / Customer Support entry — click to reveal WeChat contact and QR.
+ * Click-triggered Popover works on both desktop and mobile (hover-only
+ * variants are inaccessible on touch devices).
  */
 export function SupportPopover({
   className,
@@ -58,15 +59,12 @@ export function SupportPopover({
   }
 
   return (
-    <HoverCard>
-      <HoverCardTrigger
-        delay={120}
-        closeDelay={120}
-        render={(props) =>
+    <Popover>
+      <PopoverTrigger
+        render={
           variant === 'icon' ? (
             <button
               type='button'
-              {...props}
               className={cn(
                 'text-muted-foreground hover:bg-accent hover:text-foreground inline-flex size-8 items-center justify-center rounded-md transition-colors',
                 className
@@ -78,7 +76,6 @@ export function SupportPopover({
           ) : (
             <button
               type='button'
-              {...props}
               className={cn(
                 'text-muted-foreground hover:text-foreground inline-flex h-8 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors duration-200',
                 className
@@ -90,7 +87,7 @@ export function SupportPopover({
           )
         }
       />
-      <HoverCardContent
+      <PopoverContent
         side='bottom'
         align='end'
         sideOffset={10}
@@ -119,7 +116,7 @@ export function SupportPopover({
             </span>
           </button>
         </div>
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   )
 }
